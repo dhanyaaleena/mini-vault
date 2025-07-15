@@ -1,0 +1,13 @@
+test.db
+.pytest_cache/
+data/
+# Ignore all __pycache__ directories recursively
+__pycache__/
+**/__pycache__/
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+# Ignore virtual environment folders
+venv/
+.env
