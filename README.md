@@ -135,57 +135,53 @@ mini-vault/
 
 ---
 
-## API Endpoints
+## How to Test the API
 
-### Authentication
+You can test the Mini Vault API using tools like **curl**, **Postman**, **Swagger** or any HTTP client. For testing the download paste the url in browser.
+Here’s how to use the example requests above:
 
-| Method | Path                   | Description                                 | Auth Required |
-|--------|------------------------|---------------------------------------------|--------------|
-| POST   | /auth/code/request     | Request OTP for email/device                | No           |
-| POST   | /auth/code/verify      | Verify OTP and get session token            | No           |
-| POST   | /auth/logout/          | Logout and invalidate session               | Yes          |
+### 1. Register & Authenticate
+- Start by requesting an OTP with your email and device ID.
+- Use the OTP to verify and receive a session token.
+- **Note:** The session token must be included as a Bearer token in the `Authorization` header for all protected endpoints.
 
-### File Operations
+### 2. Upload, List, Download, Share, and Manage Files
+- Use the session token in the `Authorization` header for all file and user endpoints.
+- For file upload, use a multipart/form-data request (see curl example).
+- For file download, use the file ID returned from upload or list.
+- To share a file, provide the file ID and the recipient's email.
+- To check your storage or upgrade, use the respective endpoints with your session token.
 
-| Method | Path                   | Description                                 | Auth Required |
-|--------|------------------------|---------------------------------------------|--------------|
-| POST   | /file/upload/          | Upload a file (encrypted at rest)           | Yes          |
-| GET    | /file/download/        | Download a file (decrypted on the fly)      | Yes          |
-| GET    | /file/list/            | List owned and shared files                 | Yes          |
-| POST   | /file/share/           | Share a file with another user              | Yes          |
-| DELETE | /file/delete/          | Delete a file you own                       | Yes          |
+### 3. Example Workflow
+1. **Request OTP:**
+    - `POST /auth/code/request` with your email and device ID.
+2. **Verify OTP:**
+    - `POST /auth/code/verify` with the code and device ID. Save the `session_token` from the response.
+3. **Upload a File:**
+    - Use the `session_token` in the `Authorization` header and upload a file.
+4. **List Files:**
+    - Use the same `session_token` to list your files.
+5. **Download a File:**
+    - Use the file ID from the list/upload response and your `session_token`.
+6. **Share a File:**
+    - Use the file ID and the recipient's email, with your `session_token`.
+7. **Check Storage or Upgrade:**
+    - Use the `/user/storage/` and `/user/upgrade/` endpoints with your `session_token`.
+8. **Logout:**
+    - Call `/auth/logout/` with your `session_token` to invalidate your session.
 
-### User & Plan
-
-| Method | Path                   | Description                                 | Auth Required |
-|--------|------------------------|---------------------------------------------|--------------|
-| GET    | /user/storage/         | Get current storage usage and plan info     | Yes          |
-| POST   | /user/upgrade/         | Upgrade to premium plan                     | Yes          |
-
----
-
-### **Authentication**
-- All endpoints (except `/auth/code/request` and `/auth/code/verify`) require the `Authorization: Bearer <session_token>` header.
-- Obtain a session token by verifying OTP.
-
-### **File Upload Example (cURL)**
-```bash
-curl -X POST http://localhost:8000/file/upload/ \
-  -H "Authorization: Bearer <session_token>" \
-  -F "in_file=@/path/to/yourfile.txt"
-```
-
-### **File Download Example (cURL)**
-```bash
-curl -X GET "http://localhost:8000/file/download/?file_id=<file_id>" \
-  -H "Authorization: Bearer <session_token>" --output yourfile.txt
-```
+### 4. Tips
+- If you get a 401/403 error, check that your session token is valid and not expired.
+- Always use the `Authorization: Bearer <session-token>` header for protected endpoints.
+- Use the Swagger UI at `http://localhost:8000/docs` for interactive API testing and to see all request/response schemas.
+- For file upload in Postman, use the "form-data" body type and set the key to `in_file`.
 
 ---
 
-## API Usage Flow
 
-Below is a typical flow for using the Mini Vault API, with example requests and responses.
+## API  Details
+
+Below are the API details for using the Mini Vault API, with example requests and responses.
 
 ### 1. Request OTP (Registration/Login)
 **Request:**
@@ -322,45 +318,31 @@ Authorization: Bearer <session-token>
 
 ---
 
-## How to Test the API
+## API Endpoints Summary
 
-You can test the Mini Vault API using tools like **curl**, **Postman**, **Swagger** or any HTTP client. For testing the download paste the url in browser.
-Here’s how to use the example requests above:
+### Authentication
 
-### 1. Register & Authenticate
-- Start by requesting an OTP with your email and device ID.
-- Use the OTP to verify and receive a session token.
-- **Note:** The session token must be included as a Bearer token in the `Authorization` header for all protected endpoints.
+| Method | Path                   | Description                                 | Auth Required |
+|--------|------------------------|---------------------------------------------|--------------|
+| POST   | /auth/code/request     | Request OTP for email/device                | No           |
+| POST   | /auth/code/verify      | Verify OTP and get session token            | No           |
+| POST   | /auth/logout/          | Logout and invalidate session               | Yes          |
 
-### 2. Upload, List, Download, Share, and Manage Files
-- Use the session token in the `Authorization` header for all file and user endpoints.
-- For file upload, use a multipart/form-data request (see curl example).
-- For file download, use the file ID returned from upload or list.
-- To share a file, provide the file ID and the recipient's email.
-- To check your storage or upgrade, use the respective endpoints with your session token.
+### File Operations
 
-### 3. Example Workflow
-1. **Request OTP:**
-    - `POST /auth/code/request` with your email and device ID.
-2. **Verify OTP:**
-    - `POST /auth/code/verify` with the code and device ID. Save the `session_token` from the response.
-3. **Upload a File:**
-    - Use the `session_token` in the `Authorization` header and upload a file.
-4. **List Files:**
-    - Use the same `session_token` to list your files.
-5. **Download a File:**
-    - Use the file ID from the list/upload response and your `session_token`.
-6. **Share a File:**
-    - Use the file ID and the recipient's email, with your `session_token`.
-7. **Check Storage or Upgrade:**
-    - Use the `/user/storage/` and `/user/upgrade/` endpoints with your `session_token`.
-8. **Logout:**
-    - Call `/auth/logout/` with your `session_token` to invalidate your session.
+| Method | Path                   | Description                                 | Auth Required |
+|--------|------------------------|---------------------------------------------|--------------|
+| POST   | /file/upload/          | Upload a file (encrypted at rest)           | Yes          |
+| GET    | /file/download/        | Download a file (decrypted on the fly)      | Yes          |
+| GET    | /file/list/            | List owned and shared files                 | Yes          |
+| POST   | /file/share/           | Share a file with another user              | Yes          |
+| DELETE | /file/delete/          | Delete a file you own                       | Yes          |
 
-### 4. Tips
-- If you get a 401/403 error, check that your session token is valid and not expired.
-- Always use the `Authorization: Bearer <session-token>` header for protected endpoints.
-- Use the Swagger UI at `http://localhost:8000/docs` for interactive API testing and to see all request/response schemas.
-- For file upload in Postman, use the "form-data" body type and set the key to `in_file`.
+### User & Plan
+
+| Method | Path                   | Description                                 | Auth Required |
+|--------|------------------------|---------------------------------------------|--------------|
+| GET    | /user/storage/         | Get current storage usage and plan info     | Yes          |
+| POST   | /user/upgrade/         | Upgrade to premium plan                     | Yes          |
 
 ---
