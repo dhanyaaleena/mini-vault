@@ -15,35 +15,16 @@ A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreS
 
 ## Architecture Overview
 
-```mermaid
-graph TD
-    subgraph Client
-        A[Web/CLI Client]
-    end
-    subgraph API
-        B[FastAPI App]
-        C[Session & Auth]
-        D[File Encryption]
-        E[CRUD Logic]
-    end
-    subgraph Storage
-        F[PostgreSQL DB]
-        G[Encrypted Files (data/)]
-    end
-    A -- HTTP/HTTPS --> B
-    B -- DB ORM --> F
-    B -- File I/O --> G
-    B -- Session/Token Mgmt --> C
-    B -- Encryption --> D
-    B -- Business Logic --> E
-```
-
-- **FastAPI App**: Handles all HTTP requests, authentication, and business logic
-- **Session & Auth**: Issues and validates secure session tokens (Bearer)
-- **File Encryption**: Encrypts files before storing on disk
-- **CRUD Logic**: Handles database operations
-- **PostgreSQL**: Stores user, session, and file metadata
-- **data/**: Stores encrypted file blobs
++-------------------+         +-------------------+         +---------------------+
+|                   |         |                   |         |                     |
+|   Web/CLI Client  +-------->+    FastAPI App    +-------->+   PostgreSQL DB     |
+|                   |  HTTP   |                   |  ORM    |   (User, File Meta) |
++-------------------+         |                   |         +---------------------+
+                              |                   |
+                              |                   |         +---------------------+
+                              |                   +-------->+ Encrypted Files     |
+                              |                   |  File   |   (data/ directory) |
+                              +-------------------+  I/O    +---------------------+
 
 ---
 
