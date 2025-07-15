@@ -138,7 +138,7 @@ mini-vault/
 ## How to Test the API
 
 You can test the Mini Vault API using tools like **curl**, **Postman**, **Swagger** or any HTTP client. For testing the download paste the url in browser.
-Here’s how to use the example requests above:
+Here’s how to use the example requests below:
 
 ### 1. Register & Authenticate
 - Start by requesting an OTP with your email and device ID.
