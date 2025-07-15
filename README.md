@@ -15,12 +15,6 @@ A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreS
    (DB)         (data/)
 ```
 
-**Components:**
-- **Web/CLI Client:** User interacts via browser, CLI, or API client.
-- **FastAPI App:** Handles authentication, session management, file encryption, business logic, and API endpoints.
-- **PostgreSQL (DB):** Stores user info, session tokens, file metadata.
-- **Encrypted Files (data/):** All uploaded files are encrypted and stored on disk.
-
 **Flow:**
 1. Client sends requests (register, upload, download, etc.) to FastAPI.
 2. FastAPI authenticates, processes, and interacts with the database and file storage.
@@ -186,5 +180,4 @@ curl -X POST http://localhost:8000/file/upload/ \
 curl -X GET "http://localhost:8000/file/download/?file_id=<file_id>" \
   -H "Authorization: Bearer <session_token>" --output yourfile.txt
 ```
-
 ---
