@@ -154,9 +154,9 @@ Here’s how to use the example requests below:
 
 ### 3. Example Workflow
 1. **Request OTP:**
-    - `POST /auth/code/request` with your email and device ID.
+    - `POST /auth/code/request/` with your email and device ID.
 2. **Verify OTP:**
-    - `POST /auth/code/verify` with the code and device ID. Save the `session_token` from the response.
+    - `POST /auth/code/verify/` with the code and device ID. Save the `session_token` from the response.
 3. **Upload a File:**
     - Use the `session_token` in the `Authorization` header and upload a file.
 4. **List Files:**
@@ -186,7 +186,7 @@ Below are the API details for using the Mini Vault API, with example requests an
 ### 1. Request OTP (Registration/Login)
 **Request:**
 ```http
-POST /auth/code/request
+POST /auth/code/request/
 Content-Type: application/json
 
 {
@@ -204,7 +204,7 @@ Content-Type: application/json
 ### 2. Verify OTP and Get Session Token
 **Request:**
 ```http
-POST /auth/code/verify
+POST /auth/code/verify/
 Content-Type: application/json
 
 {
@@ -324,8 +324,8 @@ Authorization: Bearer <session-token>
 
 | Method | Path                   | Description                                 | Auth Required |
 |--------|------------------------|---------------------------------------------|--------------|
-| POST   | /auth/code/request     | Request OTP for email/device                | No           |
-| POST   | /auth/code/verify      | Verify OTP and get session token            | No           |
+| POST   | /auth/code/request/    | Request OTP for email/device                | No           |
+| POST   | /auth/code/verify/     | Verify OTP and get session token            | No           |
 | POST   | /auth/logout/          | Logout and invalidate session               | Yes          |
 
 ### File Operations

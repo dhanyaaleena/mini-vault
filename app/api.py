@@ -52,14 +52,14 @@ def get_user_id_from_session(session_id: str, db:Session) -> str:
 def root():
     return {"message": "Hello World"}
 
-@router.post("/auth/code/request")
+@router.post("/auth/code/request/")
 def getCode(code_request: CodeRequest, db: Session = Depends(get_db)):
     code = generate_otp_letters()
     create_user_and_otp(code_request.email, code_request.device_id, code, db)
 
     return {"code":code}
 
-@router.post("/auth/code/verify")
+@router.post("/auth/code/verify/")
 def verifyCode(verify_code_request: VerifyCodeRequest, db: Session = Depends(get_db)):
     code = verify_code_request.code
     device_id = verify_code_request.device_id
