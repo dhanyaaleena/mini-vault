@@ -15,6 +15,7 @@ def get_user(email, db):
     return user
 
 def create_user_and_otp(email:str, device_id:str, code:str, db: Session):
+    '''Creates new user in the table and generates otp'''
     user = get_user(email, db)
 
     if not user:
@@ -37,6 +38,7 @@ def create_user_and_otp(email:str, device_id:str, code:str, db: Session):
     db.commit()
 
 def verify_code_and_generate_session(code:str, device_id:str, db: Session):
+    '''Verifies the otp sent to email and creates new session token for the user'''
     login_code = (
         db.query(AuthCode)
         .filter(
@@ -78,6 +80,7 @@ def verify_code_and_generate_session(code:str, device_id:str, db: Session):
     return session_id
 
 def check_and_get_session_details(session_id: str, db: Session):
+    '''Retrieves the session details if exists'''
     session = db.query(SessionToken).filter(
         SessionToken.session_id == session_id,
         SessionToken.expires_at > datetime.now(UTC)
@@ -87,6 +90,7 @@ def check_and_get_session_details(session_id: str, db: Session):
     return session
 
 def create_file_entry(location:str, file_name:str, file_id: str, db:Session, checksum:str, file_size: str, user: User):
+    '''Creatse new file entry and updates the storage for the current user '''
     new_file = File(
         id=str(file_id),
         location=location,
@@ -99,6 +103,7 @@ def create_file_entry(location:str, file_name:str, file_id: str, db:Session, che
     db.commit()
 
 def get_file_location_as_owner(owner_id:str, file_id:str, db:Session):
+    '''Retrieves file location'''
     file = db.query(File).filter(
         File.id == file_id,
         File.owner_user_id ==owner_id
@@ -108,6 +113,7 @@ def get_file_location_as_owner(owner_id:str, file_id:str, db:Session):
     return file.location, file.file_name
 
 def add_share_file(file_id, email, db):
+    '''Adds the file_id and user_id of the user to whom the file got shared in the SharedFiles table'''
     user = get_user(email, db)
     if not user:
         raise UserNotFound(details="User not found")
@@ -116,12 +122,14 @@ def add_share_file(file_id, email, db):
     db.commit()
 
 def is_owner(file_id, user_id, db) -> bool:
+    '''Checks is the user owns the file'''
     file = db.query(File).filter(File.owner_user_id == user_id, File.id == file_id).first()
     if not file:
         return False
     return True
 
 def list_owned_files(owner_id: str, db: Session):
+    '''Retrieves the list of the files the user uploaded'''
     files = db.query(File).filter(File.owner_user_id ==owner_id).all()
     files_list = []
     for file in files:  
@@ -135,6 +143,7 @@ def list_owned_files(owner_id: str, db: Session):
     return files_list
 
 def list_shared_files(shared_user_id: str, db: Session):
+    '''Retrieves the files that got shared for the user'''
     shared_entries = db.query(SharedFile).filter(SharedFile.shared_user_id == shared_user_id).all()
     shared_files = []
     for entry in shared_entries:

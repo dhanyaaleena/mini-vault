@@ -23,7 +23,7 @@ A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreS
 ## Backend Features in detail
 
 - **FastAPI-based REST API:**
-  - All endpoints are built using FastAPI for high performance and automatic OpenAPI docs.
+  - All endpoints are built using FastAPI.
 
 - **User Authentication & Session Management:**
   - Users authenticate via email/device and OTP (one-time password).
