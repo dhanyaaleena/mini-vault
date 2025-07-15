@@ -2,29 +2,71 @@
 
 A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreSQL. Supports user authentication, encrypted file upload/download, sharing, and storage quota management.
 
-
-## Features
-- User registration and authentication (email/device + OTP)
-- Secure session management with Bearer tokens
-- Encrypted file upload, download, and sharing
-- Premium and non-premium user storage quotas
-- PostgreSQL database with SQLAlchemy ORM
-- Dockerized for easy deployment
-
----
-
 ## Architecture Overview
 
-+-------------------+         +-------------------+         +---------------------+
-|                   |         |                   |         |                     |
-|   Web/CLI Client  +-------->+    FastAPI App    +-------->+   PostgreSQL DB     |
-|                   |  HTTP   |                   |  ORM    |   (User, File Meta) |
-+-------------------+         |                   |         +---------------------+
-                              |                   |
-                              |                   |         +---------------------+
-                              |                   +-------->+ Encrypted Files     |
-                              |                   |  File   |   (data/ directory) |
-                              +-------------------+  I/O    +---------------------+
+```
+[ Web/CLI Client ]
+         |
+         v
+   [ FastAPI App ]
+     /         \
+    v           v
+[PostgreSQL] [Encrypted Files]
+   (DB)         (data/)
+```
+
+**Components:**
+- **Web/CLI Client:** User interacts via browser, CLI, or API client.
+- **FastAPI App:** Handles authentication, session management, file encryption, business logic, and API endpoints.
+- **PostgreSQL (DB):** Stores user info, session tokens, file metadata.
+- **Encrypted Files (data/):** All uploaded files are encrypted and stored on disk.
+
+**Flow:**
+1. Client sends requests (register, upload, download, etc.) to FastAPI.
+2. FastAPI authenticates, processes, and interacts with the database and file storage.
+3. Files are encrypted before saving and decrypted on download.
+
+## Backend Features in detail
+
+- **FastAPI-based REST API:**
+  - All endpoints are built using FastAPI for high performance and automatic OpenAPI docs.
+
+- **User Authentication & Session Management:**
+  - Users authenticate via email/device and OTP (one-time password).
+  - Secure session tokens are generated using cryptographically secure random values.
+  - Session tokens are passed via the `Authorization: Bearer <token>` header for all protected endpoints.
+  - Sessions have expiration and can be invalidated on logout.
+
+- **Role & Plan Management:**
+  - Users are categorized as premium or non-premium.
+  - Non-premium users have a 5GB total storage quota; premium users have unlimited storage.
+  - Storage usage is tracked and enforced at upload time.
+
+- **Encrypted File Storage:**
+  - All uploaded files are encrypted at rest using Fernet symmetric encryption.
+  - Files are stored on disk in the `data/` directory, never in plaintext.
+  - Files are decrypted on-the-fly when downloaded by authorized users.
+
+- **File Sharing:**
+  - Users can share files with other registered users by email.
+  - Shared files are listed separately from owned files.
+
+- **Database & Models:**
+  - Uses SQLAlchemy ORM for all database operations.
+  - PostgreSQL is used in the app; SQLite is used for testing.
+  - Alembic is used for database migrations.
+
+- **Custom Error Handling:**
+  - All errors are returned as JSON with appropriate HTTP status codes.
+  - Custom exception handlers for authentication, authorization, and file errors.
+
+- **Testing Support:**
+  - Pytest-based test suite with a temporary SQLite database.
+  - Test coverage for authentication, file upload/download, and sharing.
+
+- **Dockerized Deployment:**
+  - All services (API, DB) are containerized for easy local and production deployment.
+  - One-command startup with `run_app.sh`.
 
 ---
 
@@ -32,13 +74,12 @@ A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreS
 
 ### **Requirements**
 - Docker & Docker Compose
-- (Optional) Python 3.12+ for local development
 
 ### **Quick Start**
 
 1. **Clone the repository**
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/dhanyaaleena/mini-vault.git
     cd mini-vault
     ```
 
@@ -76,7 +117,6 @@ A secure file vault web application built with FastAPI, SQLAlchemy, and PostgreS
     ```bash
     pytest tests/
     ```
-
 ---
 
 ## Project Structure
@@ -98,14 +138,6 @@ mini-vault/
 ├── run_app.sh           # App runner script
 └── README.md            # This file
 ```
-
----
-
-## Security Notes
-- All file data is encrypted at rest using Fernet symmetric encryption
-- Session tokens are cryptographically secure and passed via Authorization header
-- Non-premium users are limited to 5GB total storage
-- Premium users have unlimited storage
 
 ---
 
